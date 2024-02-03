@@ -1,0 +1,3 @@
+numpy
+sklearn-hierarchical-classification
+scikit-multilearn
