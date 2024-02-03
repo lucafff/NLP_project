@@ -1,9 +1,9 @@
 # NLP_project
 
-### Prerequites
+### Instructions:
 ***
 
-#### 1 Preliminar preparation
+#### 1 Preliminary preparation
 
 Open a new terminal tab and move where you want to do the git clone of the project
 
