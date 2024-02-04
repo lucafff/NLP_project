@@ -66,4 +66,20 @@ def read_json_file(file_path):
             data = json.load(file)
         return data
     else:
-        return None
+        raise FileNotFoundError(f"File in '{file_path}' not found.")
+    
+
+def predict_check_status(i, duration):
+    if i == 0:
+        print("0%", end='', flush=True)
+    elif i == duration/4:
+        print('\b\b25%', end='', flush=True)
+    elif i == duration/2:
+        print('\b\b\b50%', end='', flush=True)
+    elif i == (duration/4)*3: 
+        print('\b\b\b75%', end='', flush=True)
+    elif i == duration-1: 
+        print('\b\b\b100%\n', flush=True)
+
+
+
