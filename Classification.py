@@ -23,9 +23,11 @@ from networkx import DiGraph
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import csr_matrix
 import copy
+import sys
 
 from utils import read_json_file
 from utils import fit_classifier
+from utils import predict_check_status
 from evaluation import evaluate_h
 
 # Construct the graph
@@ -76,13 +78,19 @@ test_path = "./data/dev_subtask1_en.json"
 
 if __name__ == '__main__':
     # Leggi train.json
+    print("researching the training file: ", end="")
     train_data = read_json_file(train_path)
+    print(" FOUND")
 
     # Leggi validation.json
+    print("researching the validation file: ", end="")
     validation_data = read_json_file(validation_path)
+    print(" FOUND")
 
+    # Leggi dev_subtask1_en.json
+    print("researching the test file: ", end="")
     test_data = read_json_file(test_path)
-
+    print(" FOUND")
 
     # Inizializza le liste per i dati di addestramento
     texts_train, labels_train = [], []
@@ -117,7 +125,6 @@ if __name__ == '__main__':
     X_train = texts
     y_train = labels
 
-
     vectorizer = TfidfVectorizer()
     X_test = vectorizer.fit_transform(X_test)
 
@@ -133,23 +140,38 @@ if __name__ == '__main__':
     Distraction_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
     Simplification_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
 
+
     #addestramento dei classificatori tramite apposita funzione che gli permette di usare solo il sottoinsieme del dataset che gli serve
+    print("\n\nClassifiers trained: ", end='')
     Free_classifier = fit_classifier(X_train, y_train, G, ["Free", "Persuasion"], Free_classifier, vectorizer)
+    print("1/10", end='', flush=True)
     Persuasion_classifier = fit_classifier(X_train, y_train, G, ["Ethos", "Pathos", "Logos"], Persuasion_classifier, vectorizer)
+    print('\b\b\b\b2/10', end='', flush=True)
     Ethos_classifier = fit_classifier(X_train, y_train, G, ["Ad Hominem", "Bandwagon", "Glittering generalities (Virtue)" , "Appeal to authority"], Ethos_classifier, vectorizer)
+    print('\b\b\b\b3/10', end='', flush=True)
     Ad_hominem_classifier = fit_classifier(X_train, y_train, G, ["Doubt", "Name calling/Labeling", "Smears", "Reductio ad hitlerum","Whataboutism"], Ad_hominem_classifier, vectorizer)
+    print('\b\b\b\b4/10', end='', flush=True)
     Pathos_classifier = fit_classifier(X_train, y_train, G, ["Exaggeration/Minimisation", "Loaded Language", "Appeal to fear/prejudice", "Flag-waving"], Pathos_classifier, vectorizer)
+    print('\b\b\b\b5/10', end='', flush=True)
     Logos_classifier = fit_classifier(X_train, y_train, G, ["Repetition", "Obfuscation, Intentional vagueness, Confusion", "Reasoning", "Justification"], Logos_classifier, vectorizer)
+    print('\b\b\b\b6/10', end='', flush=True)
     Justification_classifier = fit_classifier(X_train, y_train, G, ["Slogans", "Bandwagon", "Appeal to authority", "Flag-waving", "Appeal to fear/prejudice"], Justification_classifier, vectorizer)
+    print('\b\b\b\b7/10', end='', flush=True)
     Reasoning_classifier = fit_classifier(X_train, y_train, G, ["Simplification", "Distraction"], Reasoning_classifier, vectorizer)
+    print('\b\b\b\b8/10', end='', flush=True)
     Distraction_classifier = fit_classifier(X_train, y_train, G, ["Whataboutism","Misrepresentation of Someone's Position (Straw Man)","Presenting Irrelevant Data (Red Herring)"], Distraction_classifier, vectorizer)
+    print('\b\b\b\b9/10', end='', flush=True)
     Simplification_classifier = fit_classifier(X_train, y_train, G, ["Causal Oversimplification", "Black-and-white Fallacy/Dictatorship", "Thought-terminating cliché"], Simplification_classifier, vectorizer)
+    print('\b\b\b\b10/10\n', flush=True)
+
 
     y_pred = []
+    print("\nPrediction completion: ", end='')
 
     for i in range(X_test.shape[0]):
         y_pred.append([])
 
+        predict_check_status(i, X_test.shape[0])
         #probabilities = Free_classifier.predict_proba(X_test[i])
         prediction = Free_classifier.predict(X_test[i])
 
@@ -283,7 +305,7 @@ with open(output_file_path, "w", encoding='utf-8') as output_file:
     json.dump(validation_data_aux, output_file, indent=2)
 
 
-
+print("\nEvaluation of the classification method: ", end="")
 prec_h, rec_h, f1_h = evaluate_h("./data/pred.json", "./data/dev_subtask1_en.json", G)
 print("f1_h={:.5f}\tprec_h={:.5f}\trec_h={:.5f}".format(f1_h, prec_h, rec_h))
 
