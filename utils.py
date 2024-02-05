@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 
-# serie di 4 funzioni per la suddivisione del dataset secondo etichette
+# serie di 4 funzioni per la suddivisione del dataset secondo le etichette
 def find_descendants(graph, labels):
     descendants = set()
 
@@ -35,9 +35,11 @@ def find_ancestor_in_labels(graph, node, target_labels):
 
 def transform_Y_with_ancestors(graph, Y, target_labels):
     return [list(set([find_ancestor_in_labels(graph, label, target_labels) or label for label in labels_list])) for labels_list in Y]
-###############################
+##################################################################
 
 
+
+# Sequela di operazioni per la corretta esecuzione della fit per ogni classificatore: suddivisione del dataset in solo le parti rilevanti per il classificatore e vettorizzazione di X
 def fit_classifier(X_Train, y_Train, G, labels_to_check, classifier, vectorizer):
     X, Y = filter_matrix_by_labels(X_Train, y_Train, labels_to_check, G)
     new_Y = transform_Y_with_ancestors(G, Y, labels_to_check)
@@ -46,7 +48,7 @@ def fit_classifier(X_Train, y_Train, G, labels_to_check, classifier, vectorizer)
 
     return classifier.fit(X_tfidf, Y)
 
-
+#Funzione che binarizza le etichette output della serie di funzioni per renderle un vettore binario adatto alla fit
 def Binarizzatore_etichette(lista_stringhe, lista_liste):
     # Inizializza la matrice con zeri
     matrice = [[0] * len(lista_stringhe) for _ in range(len(lista_liste))]
@@ -59,7 +61,7 @@ def Binarizzatore_etichette(lista_stringhe, lista_liste):
 
     return matrice
 
-
+#Funzione di lettura dei file .json
 def read_json_file(file_path):
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -68,7 +70,7 @@ def read_json_file(file_path):
     else:
         raise FileNotFoundError(f"File in '{file_path}' not found.")
     
-
+# Funzione per la stampa dei progressi della predict
 def predict_check_status(i, duration):
     if i == 0:
         print("0%", end='', flush=True)
