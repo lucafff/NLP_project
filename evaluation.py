@@ -13,7 +13,7 @@ from sklearn_hierarchical_classification.metrics import h_fbeta_score, h_recall_
 import sys
 sys.path.append('.')
 
-
+#  Tutto questo codice è un adattamento di quello fornito per eseguire la valutazione
 KEYS = ['id','labels']
 
 #F1
