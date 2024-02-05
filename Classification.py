@@ -1,27 +1,15 @@
-from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import make_multilabel_classification
-from sklearn_hierarchical_classification.classifier import HierarchicalClassifier
 from sklearn_hierarchical_classification.constants import ROOT
 import json
 import os
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.decomposition import TruncatedSVD
-from sklearn.svm import SVC
-from sklearn.pipeline import make_pipeline
-from skmultilearn.problem_transform import BinaryRelevance
-from sklearn.metrics import accuracy_score
-from skmultilearn.adapt import MLkNN
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn_hierarchical_classification.classifier import HierarchicalClassifier
 from sklearn_hierarchical_classification.constants import ROOT
 from networkx import DiGraph
 from sklearn.feature_extraction.text import TfidfVectorizer
-from scipy.sparse import csr_matrix
 import copy
 import sys
 
@@ -97,11 +85,12 @@ if __name__ == '__main__':
     texts_validation, labels_validation = [], []
     texts_test, labels_test = [], []
     texts_test_vero, labels_test_vero = [], []
+
+    # Estre dati dai dataset se esistono inserendo la nuova etichetta "Free" nelle liste vuote
     if train_data:
         texts_train = [element['text'] for element in train_data]
         labels_train = [element['labels'] if element['labels'] else ['Free'] for element in train_data]
 
-    # Estre x e y dai dataset se esistono
     if validation_data:
         texts_validation = [element['text'] for element in validation_data]
         labels_validation = [element['labels'] if element['labels'] else ['Free'] for element in validation_data]
@@ -114,12 +103,7 @@ if __name__ == '__main__':
     texts = texts_train + texts_validation
     labels = labels_train + labels_validation
 
-
-    """
-    # Divide dataset in set di addestramento e test
-    X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2, random_state=42)  # , stratify=results
-    """
-    ####### nuova sezione per avere validation.json come gold
+    # definizione test set e training set
     X_test = texts_test
     y_test = labels_test
     X_train = texts
@@ -128,7 +112,7 @@ if __name__ == '__main__':
     vectorizer = TfidfVectorizer()
     X_test = vectorizer.fit_transform(X_test)
 
-    # Definizione dei classificatori
+    # Definizione dei classificatori, uno per nodo non foglio del grafo (modificato)
     Free_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
     Persuasion_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
     Ethos_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
@@ -165,6 +149,7 @@ if __name__ == '__main__':
     print('\b\b\b\b10/10\n', flush=True)
 
 
+    # Sezione prediction con albero che gestisce la classificazione del test set un elemento  alla volta
     y_pred = []
     print("\nPrediction completion: ", end='')
 
@@ -172,7 +157,6 @@ if __name__ == '__main__':
         y_pred.append([])
 
         predict_check_status(i, X_test.shape[0])
-        #probabilities = Free_classifier.predict_proba(X_test[i])
         prediction = Free_classifier.predict(X_test[i])
 
         # Free
@@ -292,19 +276,19 @@ if __name__ == '__main__':
 
 
 # Creazione di copie profonde per evitare riferimenti condivisi
-validation_data_aux = copy.deepcopy(test_data)
+aux = copy.deepcopy(test_data)
 
-# Sostituisci i valori del campo 'labels' di validation_data_aux con quelli di aux
-for i, element in enumerate(validation_data_aux):
+# Sostituisci i valori del campo 'labels' di y_pred con quelli di aux
+for i, element in enumerate(aux):
     element["labels"] = y_pred[i]
 
 
-# Salva il nuovo validation_data modificato in un file pred.json
+# Salva il nuovo validation_data modificato in un file pred.json nella cartella data, alle successive esecuzioni verrà riscritto
 output_file_path = "./data/pred.json"
 with open(output_file_path, "w", encoding='utf-8') as output_file:
-    json.dump(validation_data_aux, output_file, indent=2)
+    json.dump(aux, output_file, indent=2)
 
-
+# Esecuzione della funzione di valuazione e succesiva stampa
 print("\nEvaluation of the classification method: ", end="")
 prec_h, rec_h, f1_h = evaluate_h("./data/pred.json", "./data/dev_subtask1_en.json", G)
 print("f1_h={:.5f}\tprec_h={:.5f}\trec_h={:.5f}".format(f1_h, prec_h, rec_h))
