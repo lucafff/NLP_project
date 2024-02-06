@@ -12,6 +12,7 @@ from networkx import DiGraph
 from sklearn.feature_extraction.text import TfidfVectorizer
 import copy
 import sys
+import time
 
 from utils import read_json_file
 from utils import fit_classifier
@@ -109,6 +110,9 @@ if __name__ == '__main__':
     X_train = texts
     y_train = labels
 
+    #Misurazione del tempo di addestranento e predizione
+    start_time = time.time()
+
     # Definizione del Tfidf vectorizer con con il train e traonform del test ma non del train perché verrà fatto nella funzione di fit del classifier 
     vectorizer = TfidfVectorizer()
     vectorizer.fit(X_train)
@@ -153,12 +157,12 @@ if __name__ == '__main__':
 
     # Sezione prediction con albero che gestisce la classificazione del test set un elemento  alla volta
     y_pred = []
-    print("\nPrediction completion: ", end='')
+    print("\nPrediction completion:   ", end='')
 
     for i in range(X_test.shape[0]):
         y_pred.append([])
 
-        predict_check_status(i, X_test.shape[0])
+        predict_check_status(i)
         prediction = Free_classifier.predict(X_test[i])
 
         # Free
@@ -275,7 +279,7 @@ if __name__ == '__main__':
         y_pred[i] = list(set(y_pred[i]))
 
 
-
+end_time = time.time()
 
 # Creazione di copie profonde per evitare riferimenti condivisi
 aux = copy.deepcopy(test_data)
@@ -291,17 +295,13 @@ with open(output_file_path, "w", encoding='utf-8') as output_file:
     json.dump(aux, output_file, indent=2)
 
 # Esecuzione della funzione di valuazione e succesiva stampa
-print("\nEvaluation of the classification method: ", end="")
+print("\n\n\nEvaluation of the classification method: ", end="")
 prec_h, rec_h, f1_h = evaluate_h("./data/pred.json", "./data/dev_subtask1_en.json", G)
 print("f1_h={:.5f}\tprec_h={:.5f}\trec_h={:.5f}".format(f1_h, prec_h, rec_h))
 
 
-
-
-
-
-
-
+elapsed_time = end_time - start_time
+print(f"The training and prediction process took {round(elapsed_time)} seconds.")
 
 
 
