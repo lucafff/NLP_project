@@ -109,8 +109,10 @@ if __name__ == '__main__':
     X_train = texts
     y_train = labels
 
+    # Definizione del Tfidf vectorizer con con il train e traonform del test ma non del train perché verrà fatto nella funzione di fit del classifier 
     vectorizer = TfidfVectorizer()
-    X_test = vectorizer.fit_transform(X_test)
+    vectorizer.fit(X_train)
+    X_test = vectorizer.transform(X_test)
 
     # Definizione dei classificatori, uno per nodo non foglio del grafo (modificato)
     Free_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
