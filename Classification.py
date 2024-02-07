@@ -157,12 +157,11 @@ if __name__ == '__main__':
 
     # Sezione prediction con albero che gestisce la classificazione del test set un elemento  alla volta
     y_pred = []
-    print("\nPrediction completion:   ", end='')
+    print("\nPrediction completion:    ", end='')
 
     for i in range(X_test.shape[0]):
         y_pred.append([])
-
-        predict_check_status(i)
+        predict_check_status(i, X_test.shape[0])
         prediction = Free_classifier.predict(X_test[i])
 
         # Free
@@ -302,6 +301,10 @@ print("f1_h={:.5f}\tprec_h={:.5f}\trec_h={:.5f}".format(f1_h, prec_h, rec_h))
 
 elapsed_time = end_time - start_time
 print(f"The training and prediction process took {round(elapsed_time)} seconds.")
+
+
+
+
 
 
 
