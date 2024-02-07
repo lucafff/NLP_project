@@ -70,17 +70,19 @@ def read_json_file(file_path):
     else:
         raise FileNotFoundError(f"File in '{file_path}' not found.")
     
-# Funzione per la stampa dei progressi della predict (funziona solo su 1000 elementi da esaminare)
-def predict_check_status(i):
-    progress = round((i+1) / 10)
-    if i < 10:
-        print(f'\b\b{progress}%', end='', flush=True)
-    elif i < 100:
-        progress = str(i+1)
-        print(f'\b\b{progress[:-1]}%', end='', flush=True)
+# Funzione per la stampa dei progressi della predict
+def predict_check_status(numero, intervallo):
+    result = int(((numero+1) / intervallo) * 100)
+    if result < 10:
+        print(f"\b\b\b{result}% ", end='', flush=True)
+    elif result < 100:
+        print(f"\b\b\b{result}%", end='', flush=True)
     else:
-        progress = str(i+1)
-        print(f'\b\b\b{progress[:-1]}%', end='', flush=True)
+        print(f"\b\b\b{result}%", end='', flush=True)
+
+
+
+
 
 
 
