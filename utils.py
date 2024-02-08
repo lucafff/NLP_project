@@ -41,7 +41,9 @@ def transform_Y_with_ancestors(graph, Y, target_labels):
 
 # Sequela di operazioni per la corretta esecuzione della fit per ogni classificatore: suddivisione del dataset in solo le parti rilevanti per il classificatore e vettorizzazione di X
 def fit_classifier(X_Train, y_Train, G, labels_to_check, classifier, vectorizer):
+    # Funzione che rende solo la porzione di dataset che serve e le etichette
     X, Y = filter_matrix_by_labels(X_Train, y_Train, labels_to_check, G)
+    # Trasforma le etichette foglia nei loro antenati etichette non foglia contenuti in labels_to_check (in caso non siano antenati non fa nessuna operazione)
     new_Y = transform_Y_with_ancestors(G, Y, labels_to_check)
     Y = Binarizzatore_etichette(labels_to_check, new_Y)
     X_tfidf = vectorizer.transform(X.flatten().tolist())
