@@ -113,12 +113,12 @@ if __name__ == '__main__':
     #Misurazione del tempo di addestranento e predizione
     start_time = time.time()
 
-    # Definizione del Tfidf vectorizer con con il train e traonform del test ma non del train perché verrà fatto nella funzione di fit del classifier 
+    # Definizione del Tfidf vectorizer con con il train e transform del test ma non del train perché verrà fatto nella funzione di fit del classifier 
     vectorizer = TfidfVectorizer()
     vectorizer.fit(X_train)
     X_test = vectorizer.transform(X_test)
 
-    # Definizione dei classificatori, uno per nodo non foglio del grafo (modificato)
+    # Definizione dei classificatori, uno per nodo non foglia del grafo (modificato)
     Free_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
     Persuasion_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
     Ethos_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     Simplification_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
 
 
-    #addestramento dei classificatori tramite apposita funzione che gli permette di usare solo il sottoinsieme del dataset che gli serve
+    #addestramento dei classificatori tramite apposita funzione che gli permette di usare solo il sottoinsieme del dataset rilevante per il nodo
     print("\n\nClassifiers trained: ", end='')
     Free_classifier = fit_classifier(X_train, y_train, G, ["Free", "Persuasion"], Free_classifier, vectorizer)
     print("1/10", end='', flush=True)
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     print('\b\b\b\b10/10\n', flush=True)
 
 
-    # Sezione prediction con albero che gestisce la classificazione del test set un elemento  alla volta
+    # Sezione prediction ad albero che gestisce la classificazione del test set un elemento  alla volta
     y_pred = []
     print("\nPrediction completion:    ", end='')
 
@@ -283,12 +283,12 @@ end_time = time.time()
 # Creazione di copie profonde per evitare riferimenti condivisi
 aux = copy.deepcopy(test_data)
 
-# Sostituisci i valori del campo 'labels' di y_pred con quelli di aux
+# Sostituisce i valori del campo 'labels' di y_pred con quelli di aux
 for i, element in enumerate(aux):
     element["labels"] = y_pred[i]
 
 
-# Salva il nuovo validation_data modificato in un file pred.json nella cartella data, alle successive esecuzioni verrà riscritto
+# Salva il nuovo test_data con le previsioni in un file pred.json nella cartella data, alle successive esecuzioni verrà riscritto
 output_file_path = "./data/pred.json"
 with open(output_file_path, "w", encoding='utf-8') as output_file:
     json.dump(aux, output_file, indent=2)
