@@ -85,7 +85,6 @@ if __name__ == '__main__':
     texts_train, labels_train = [], []
     texts_validation, labels_validation = [], []
     texts_test, labels_test = [], []
-    texts_test_vero, labels_test_vero = [], []
 
     # Estre dati dai dataset se esistono inserendo la nuova etichetta "Free" nelle liste vuote
     if train_data:
