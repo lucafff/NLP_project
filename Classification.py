@@ -1,6 +1,8 @@
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import make_multilabel_classification
 from sklearn_hierarchical_classification.constants import ROOT
@@ -17,6 +19,7 @@ import time
 from utils import read_json_file
 from utils import fit_classifier
 from utils import predict_check_status
+from utils import get_base_classifier
 from evaluation import evaluate_h
 
 # Construct the graph
@@ -117,17 +120,22 @@ if __name__ == '__main__':
     vectorizer.fit(X_train)
     X_test = vectorizer.transform(X_test)
 
-    # Definizione dei classificatori, uno per nodo non foglia del grafo (modificato)
-    Free_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
-    Persuasion_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Ethos_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Ad_hominem_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Pathos_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Logos_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Justification_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Reasoning_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Distraction_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
-    Simplification_classifier = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
+    # Definisci il tipo di classificatore (opzioni: 'random_forest', 'svm', 'kneighbors', 'logistic_regression')
+    # Cambia questo per passare da un classificatore all'altro
+    classifier_type = 'random_forest' 
+    base_classifier = get_base_classifier(classifier_type)
+    
+    # Definisci i classificatori, uno per ciascun nodo non foglia del grafo (modificato)
+    Free_classifier = base_classifier
+    Persuasion_classifier = MultiOutputClassifier(base_classifier)
+    Ethos_classifier = MultiOutputClassifier(base_classifier)
+    Ad_hominem_classifier = MultiOutputClassifier(base_classifier)
+    Pathos_classifier = MultiOutputClassifier(base_classifier)
+    Logos_classifier = MultiOutputClassifier(base_classifier)
+    Justification_classifier = MultiOutputClassifier(base_classifier)
+    Reasoning_classifier = MultiOutputClassifier(base_classifier)
+    Distraction_classifier = MultiOutputClassifier(base_classifier)
+    Simplification_classifier = MultiOutputClassifier(base_classifier)
 
 
     #addestramento dei classificatori tramite apposita funzione che gli permette di usare solo il sottoinsieme del dataset rilevante per il nodo
