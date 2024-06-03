@@ -1,7 +1,11 @@
 import os
 import json
 import numpy as np
-
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 
 # serie di 4 funzioni per la suddivisione del dataset secondo le etichette
 def find_descendants(graph, labels):
@@ -83,7 +87,17 @@ def predict_check_status(numero, intervallo):
         print(f"\b\b\b{result}%", end='', flush=True)
 
 
-
+def get_base_classifier(classifier_type):
+    if classifier_type == 'random_forest':
+        return RandomForestClassifier(n_estimators=100, random_state=42)
+    elif classifier_type == 'svm':
+        return SVC(probability=True, random_state=42)
+    elif classifier_type == 'kneighbors':
+        return KNeighborsClassifier()
+    elif classifier_type == 'logistic_regression':
+        return LogisticRegression(max_iter=1000, random_state=42)
+    else:
+        raise ValueError("Unsupported classifier type")
 
 
 
