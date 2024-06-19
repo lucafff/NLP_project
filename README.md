@@ -25,3 +25,17 @@ pip install -r requirements.txt
 ```
 python Classification.py
 ```
+
+***
+### Additional clarifications: 
+
+In the "Mio other versions" directory are present also the other versions of the model tested, is suggested to download an run on Google Colab
+
+
+
+
+
+
+
+
+
